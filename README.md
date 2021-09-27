@@ -25,6 +25,7 @@ There are some dependencies that need to be in place before implementing the inf
 3. The Client Application, in this case  the Azure Function App that contains the two functions, needs to be registered with the IdP, in this case Azure Active Directory 
 4. The Client Application needs to be granted at least read access permissions/roles to the Microsoft Graph Service
 5. In order to have the function app code available for deployment to Azure, Visual Studio or Visual Studio Code and related Azure Account, Azure Functions and the Azure CLI Tools extensions are needed
+6. ARM templates include obfuscated subscription ids, resource groups, connection strings and identity ids. Those elements need to be updated before running the templates   
 
 # Implementation Steps
 In order to implement this demo in an Azure environment, the following are the steps that need to be taken:
