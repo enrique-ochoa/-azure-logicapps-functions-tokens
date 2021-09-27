@@ -1,0 +1,67 @@
+[
+  {
+    "name": "APP_KIND",
+    "value": "workflowApp",
+    "slotSetting": false
+  },
+  {
+    "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+    "value": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    "slotSetting": false
+  },
+  {
+    "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+    "value": "InstrumentationKey=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx;IngestionEndpoint=https://centralus-2.in.applicationinsights.azure.com/",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureBlob_connectionString",
+    "value": "yyyyyyyyyyy",
+    "slotSetting": false
+  },
+  {
+    "name": "azureFunctionOperation_functionAppKey",
+    "value": "zzzzzzzzzz",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensionBundle__id",
+    "value": "Microsoft.Azure.Functions.ExtensionBundle.Workflows",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensionBundle__version",
+    "value": "[1.*, 2.0.0)",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureWebJobsStorage",
+    "value": "zzzzzzzzzzzzzzzz",
+    "slotSetting": false
+  },
+  {
+    "name": "FUNCTIONS_EXTENSION_VERSION",
+    "value": "~3",
+    "slotSetting": false
+  },
+  {
+    "name": "FUNCTIONS_WORKER_RUNTIME",
+    "value": "node",
+    "slotSetting": false
+  },
+  {
+    "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+    "value": "xxxxxxxxxxxxx",
+    "slotSetting": false
+  },
+  {
+    "name": "WEBSITE_CONTENTSHARE",
+    "value": "log-app-func-tokens-api-blob-trigger8597",
+    "slotSetting": false
+  },
+  {
+    "name": "WEBSITE_NODE_DEFAULT_VERSION",
+    "value": "~12",
+    "slotSetting": false
+  }
+]

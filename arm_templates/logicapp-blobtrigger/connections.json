@@ -1,0 +1,49 @@
+{
+  "functionConnections": {
+    "azureFunctionOperation": {
+      "authentication": {
+        "name": "Code",
+        "type": "QueryString",
+        "value": "@appsetting('azureFunctionOperation_functionAppKey')"
+      },
+      "displayName": "Step 1",
+      "function": {
+        "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx/resourceGroups/yyyyyyyyyyyyy/providers/Microsoft.Web/sites/func-app-get-token-call-api/functions/HttpTrigger1"
+      },
+      "triggerUrl": "https://func-app-get-token-call-api.azurewebsites.net/api/httptrigger1"
+    },
+    "azureFunctionOperation-2": {
+      "authentication": {
+        "name": "Code",
+        "type": "QueryString",
+        "value": "@appsetting('azureFunctionOperation_12_functionAppKey')"
+      },
+      "displayName": "Step 2",
+      "function": {
+        "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx/resourceGroups/yyyyyyyyyyyyy/providers/Microsoft.Web/sites/func-app-get-token-call-api/functions/HttpTrigger2"
+      },
+      "triggerUrl": "https://func-app-get-token-call-api.azurewebsites.net/api/httptrigger2"
+    }
+  },
+  "managedApiConnections": {},
+  "serviceProviderConnections": {
+    "AzureBlob": {
+      "displayName": "stoacctokensapiblobtrigg_connection",
+      "parameterValues": {
+        "connectionString": "@appsetting('AzureBlob_connectionString')"
+      },
+      "serviceProvider": {
+        "id": "/serviceProviders/AzureBlob"
+      }
+    },
+    "AzureBlob-2": {
+      "displayName": "stoacctokensapiblobtrigg-conn",
+      "parameterValues": {
+        "connectionString": "@appsetting('AzureBlob_12_connectionString')"
+      },
+      "serviceProvider": {
+        "id": "/serviceProviders/AzureBlob"
+      }
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx/resourceGroups/yyyyyyyyy/providers/Microsoft.Web/sites/log-app-func-tokens-api-blob-trigger/workflows/wf-func-tokens-api-blob-trig",
+  "name": "log-app-func-tokens-api-blob-trigger/wf-func-tokens-api-blob-trig",
+  "type": "Microsoft.Web/sites/workflows",
+  "kind": "Stateful",
+  "location": "Central US",
+  "properties": {
+    "files": {
+      "workflow.json": {
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+          "actions": {
+            "Call_API_using_Access_Token": {
+              "inputs": {
+                "body": "@outputs('Get_Access_Token')?['body']",
+                "function": {
+                  "connectionName": "azureFunctionOperation-2"
+                },
+                "method": "POST"
+              },
+              "runAfter": {
+                "Get_Access_Token": [
+                  "Succeeded"
+                ]
+              },
+              "type": "Function"
+            },
+            "Get_Access_Token": {
+              "inputs": {
+                "function": {
+                  "connectionName": "azureFunctionOperation"
+                },
+                "method": "GET"
+              },
+              "runAfter": {},
+              "type": "Function"
+            }
+          },
+          "contentVersion": "1.0.0.0",
+          "outputs": {},
+          "triggers": {
+            "When_a_blob_is_Added_or_Modified_in_Azure_Storage": {
+              "inputs": {
+                "parameters": {
+                  "path": "customer-files"
+                },
+                "serviceProviderConfiguration": {
+                  "connectionName": "AzureBlob",
+                  "operationId": "whenABlobIsAddedOrModified",
+                  "serviceProviderId": "/serviceProviders/AzureBlob"
+                }
+              },
+              "type": "ServiceProvider"
+            }
+          }
+        },
+        "kind": "Stateful"
+      }
+    },
+    "flowState": 2,
+    "health": {
+      "state": 1
+    }
+  }
+}

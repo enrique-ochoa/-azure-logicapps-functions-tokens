@@ -1,0 +1,221 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "serverfarms_asp_funcappgettokencallapi_name": {
+      "defaultValue": "asp-funcappgettokencallapi-2",
+      "type": "String"
+    },
+    "sites_func_app_get_token_call_api_name": {
+      "defaultValue": "func-app-get-token-call-api-2",
+      "type": "String"
+    },
+    "storageAccounts_stofuncappgettokcallapi_name": {
+      "defaultValue": "stoaccfuncapp",
+      "type": "String"
+    },
+    "components_appins_funcapptoken_name": {
+      "defaultValue": "appins-funcapptoken",
+      "type": "String"
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-04-01",
+      "name": "[parameters('storageAccounts_stofuncappgettokcallapi_name')]",
+      "location": "centralus",
+      "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"
+      },
+      "kind": "Storage",
+      "properties": {
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [],
+          "ipRules": [],
+          "defaultAction": "Allow"
+        },
+        "supportsHttpsTrafficOnly": true,
+        "encryption": {
+          "services": {
+            "file": {
+              "keyType": "Account",
+              "enabled": true
+            },
+            "blob": {
+              "keyType": "Account",
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices",
+      "apiVersion": "2021-04-01",
+      "name": "[concat(parameters('storageAccounts_stofuncappgettokcallapi_name'), '/default')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stofuncappgettokcallapi_name'))]"
+      ],
+      "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"
+      },
+      "properties": {
+        "cors": {
+          "corsRules": []
+        },
+        "deleteRetentionPolicy": {
+          "enabled": false
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+      "apiVersion": "2021-04-01",
+      "name": "[concat(parameters('storageAccounts_stofuncappgettokcallapi_name'), '/default/azure-webjobs-hosts')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_stofuncappgettokcallapi_name'), 'default')]",
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stofuncappgettokcallapi_name'))]"
+      ],
+      "properties": {
+        "defaultEncryptionScope": "$account-encryption-key",
+        "denyEncryptionScopeOverride": false,
+        "publicAccess": "None"
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+      "apiVersion": "2021-04-01",
+      "name": "[concat(parameters('storageAccounts_stofuncappgettokcallapi_name'), '/default/azure-webjobs-secrets')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_stofuncappgettokcallapi_name'), 'default')]",
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stofuncappgettokcallapi_name'))]"
+      ],
+      "properties": {
+        "defaultEncryptionScope": "$account-encryption-key",
+        "denyEncryptionScopeOverride": false,
+        "publicAccess": "None"
+      }
+    },
+    {
+      "type": "microsoft.insights/components",
+      "apiVersion": "2020-02-02",
+      "name": "[parameters('components_appins_funcapptoken_name')]",
+      "location": "centralus",
+      "kind": "web",
+      "properties": {
+        "Application_Type": "web",
+        "RetentionInDays": 90,
+        "IngestionMode": "ApplicationInsights",
+        "publicNetworkAccessForIngestion": "Enabled",
+        "publicNetworkAccessForQuery": "Enabled"
+      }
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2021-01-15",
+      "name": "[parameters('serverfarms_asp_funcappgettokencallapi_name')]",
+      "location": "Central US",
+      "sku": {
+        "name": "S1",
+        "tier": "Standard",
+        "size": "S1",
+        "family": "S",
+        "capacity": 1
+      },
+      "kind": "app",
+      "properties": {
+        "perSiteScaling": false,
+        "elasticScaleEnabled": false,
+        "maximumElasticWorkerCount": 1,
+        "isSpot": false,
+        "reserved": false,
+        "isXenon": false,
+        "hyperV": false,
+        "targetWorkerCount": 0,
+        "targetWorkerSizeId": 0
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2021-01-15",
+      "name": "[parameters('sites_func_app_get_token_call_api_name')]",
+      "location": "Central US",
+      "kind": "functionapp",
+      "properties": {
+        "enabled": true,
+        "serverFarmId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Web/serverfarms/',parameters('serverfarms_asp_funcappgettokencallapi_name'))]",
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "ApiUrl",
+              "value": "https://graph.microsoft.com/"
+            },
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccounts_stofuncappgettokcallapi_name'), ';AccountKey=', listKeys(resourceId(resourceGroup().name,'Microsoft.Storage/storageAccounts',parameters('storageAccounts_stofuncappgettokcallapi_name')),'2019-04-01').keys[0].value,';EndpointSuffix=core.windows.net')]"
+            },
+            {
+              "name": "ENABLE_KUDU_PERSISTENT_STORAGE",
+              "value": "1"
+            },
+            {
+              "name": "CLIENT_ID",
+              "value": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+            },
+            {
+              "name": "CLIENT_SECRET",
+              "value": "yyy-yyyyyyyyyyyy-yyy-yyyyyyyyyyyy"
+            },
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "~3"
+            },
+            {
+              "name": "FUNCTIONS_WORKER_RUNTIME",
+              "value": "dotnet"
+            },
+            {
+              "name": "TENANT",
+              "value": "zzzzzzzz-zzzz-zzzz-zzzz-zzzzzzzzzzzz"
+            },
+            {
+              "name": "WEBSITE_RUN_FROM_PACKAGE",
+              "value": "1"
+            },
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(resourceId('microsoft.insights/components/', parameters('components_appins_funcapptoken_name')), '2020-02-02').InstrumentationKey]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_asp_funcappgettokencallapi_name'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stofuncappgettokcallapi_name'))]",
+        "[resourceId('microsoft.insights/components', parameters('components_appins_funcapptoken_name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "storageAccountConnectionString": {
+      "type": "string",
+      "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccounts_stofuncappgettokcallapi_name'), ';AccountKey=', listKeys(resourceId(resourceGroup().name,'Microsoft.Storage/storageAccounts',parameters('storageAccounts_stofuncappgettokcallapi_name')),'2019-04-01').keys[1].value,';EndpointSuffix=core.windows.net')]"
+    },
+    "subscriptionId": {
+      "condition": "[bool('true')]",
+      "type": "string",
+      "value": "[subscription().subscriptionId]"
+    },
+    "uniqueString": {
+      "condition": "[bool('true')]",
+      "type": "string",
+      "value": "[resourceGroup().name]"
+    }
+  }
+}
